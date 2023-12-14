@@ -69,8 +69,6 @@ contract Profile {
         string memory url,
         address _owner
     ) {
-        verified = true;
-
         name = _name;
 
         description = _description;
@@ -344,6 +342,10 @@ contract Profile {
 
     function removeAccountFromAccessList(address account) public onlySuperOwner {
         accesslist[account] = false;
+    }
+
+    function addVerification() public onlySuperOwner {
+        verified = true;
     }
 
     function removeVerification() public onlySuperOwner {

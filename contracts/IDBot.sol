@@ -8,9 +8,12 @@ contract IDBot {
 
     address[] public _profiles;
 
+    string[] public profileIds;
+
     mapping (string => address) public profiles;
 
     struct Subscription {
+        string idbot;
         address account;
         uint256 duration;
         uint256 startedAt;
@@ -20,6 +23,8 @@ contract IDBot {
     Subscription[] public _subscribers;
 
     mapping (address => Subscription) public subscribers;
+
+    event Subscribed(address indexed account, string idbot, uint256 duration);
 
     event CreateProfile(address indexed profile, address indexed owner, string profileId);
 
@@ -67,6 +72,8 @@ contract IDBot {
             block.timestamp
         ));
 
+        profileIds.push(profileId);
+
         _profiles.push(address(profile));
 
         profiles[profileId] = address(profile);
@@ -74,11 +81,12 @@ contract IDBot {
         emit CreateProfile(address(profile), _owner, profileId);
     }
 
-    function subscribe(address _account, uint256 _duration) public onlyOwner {
+    function subscribe(string memory _idbot, address _account, uint256 _duration) public onlyOwner {
         if(isSubscribed(_account)) {
             updateSubscription(_account, _duration);
         } else {
             Subscription memory subscription = Subscription({
+                idbot : _idbot,
                 account : _account,
                 duration : _duration,
                 startedAt : block.timestamp,
@@ -94,6 +102,8 @@ contract IDBot {
             _subscribers.push(subscription);
 
             subscribers[_account] = subscription;
+
+            emit Subscribed(_account, _idbot, _duration);
         }
     }
 
@@ -114,7 +124,7 @@ contract IDBot {
         }
     }
 
-    function isSubscribed(address _account) internal view onlyOwner returns (bool subscribed) {
+    function isSubscribed(address _account) public view onlyOwner returns (bool subscribed) {
         Subscription memory subscriber = subscribers[_account];
 
         if(_account == subscriber.account) {
@@ -134,5 +144,7 @@ contract IDBot {
         subscriber.duration = _duration;
 
         subscriber.startedAt = block.timestamp;
+
+        emit Subscribed(_account, subscriber.idbot, _duration);
     }
 }
