@@ -8,12 +8,13 @@ contract IDBot {
 
     address[] public _profiles;
 
-    string[] public profileIds;
+    mapping (address => address) public profiles;
 
-    mapping (string => address) public profiles;
+    mapping (uint256 => address) public profiles_;
+
+    mapping (address => bool) public isProfiled;
 
     struct Subscription {
-        string idbot;
         address account;
         uint256 duration;
         uint256 startedAt;
@@ -24,9 +25,9 @@ contract IDBot {
 
     mapping (address => Subscription) public subscribers;
 
-    event Subscribed(address indexed account, string idbot, uint256 duration);
+    event Subscribed(address indexed account, uint256 duration);
 
-    event CreateProfile(address indexed profile, address indexed owner, string profileId);
+    event CreateProfile(address indexed profile, address indexed owner, uint256 profileId);
 
     constructor() {
         owner = msg.sender;
@@ -42,15 +43,16 @@ contract IDBot {
         string memory _description,
         bool _dev,
         string memory _email,
-        uint256 _age,
+        string memory _age,
         string memory phone,
         string memory _country,
         string memory _state,
         string memory _address,
         string memory url,
         address _owner,
-        string memory _hash
+        uint256 number
     ) public onlyOwner {
+        require(isProfiled[_owner], "You already have an account.");
         Profile profile = new Profile(
             _name,
             _description,
@@ -65,28 +67,24 @@ contract IDBot {
             _owner
         );
 
-        string memory profileId = string(abi.encodePacked(
-            "did-IDBot-",
-            _hash,
-            "#",
-            block.timestamp
-        ));
-
-        profileIds.push(profileId);
+        uint256 profileId = number + block.timestamp;
 
         _profiles.push(address(profile));
 
-        profiles[profileId] = address(profile);
+        profiles[_owner] = address(profile);
+
+        profiles_[profileId] = address(profile);
+
+        isProfiled[_owner] = true;
 
         emit CreateProfile(address(profile), _owner, profileId);
     }
 
-    function subscribe(string memory _idbot, address _account, uint256 _duration) public onlyOwner {
+    function subscribe(address _account, uint256 _duration) public payable onlyOwner {
         if(isSubscribed(_account)) {
             updateSubscription(_account, _duration);
         } else {
             Subscription memory subscription = Subscription({
-                idbot : _idbot,
                 account : _account,
                 duration : _duration,
                 startedAt : block.timestamp,
@@ -99,11 +97,19 @@ contract IDBot {
                 profile.addAccountToAccessList(_account);
             }
 
+            Profile _profile = Profile(profiles[_account]);
+
+            _profile.addVerification();
+
             _subscribers.push(subscription);
 
             subscribers[_account] = subscription;
 
-            emit Subscribed(_account, _idbot, _duration);
+            emit Subscribed(_account, _duration);
+
+            (bool success, ) = payable(owner).call{value: msg.value}("");
+
+            require(success);
         }
     }
 
@@ -120,6 +126,10 @@ contract IDBot {
 
                     profile.removeAccountFromAccessList(subscriber.account);
                 }
+
+                Profile _profile = Profile(subscriber.account);
+
+                _profile.removeVerification();
             }
         }
     }
@@ -134,7 +144,7 @@ contract IDBot {
         }
     }
 
-    function updateSubscription(address _account, uint256 _duration) internal onlyOwner {
+    function updateSubscription(address _account, uint256 _duration) public payable onlyOwner {
         Subscription storage subscriber = subscribers[_account];
 
         if(subscriber.isActive == false) {
@@ -145,6 +155,10 @@ contract IDBot {
 
         subscriber.startedAt = block.timestamp;
 
-        emit Subscribed(_account, subscriber.idbot, _duration);
+        emit Subscribed(_account, _duration);
+
+        (bool success, ) = payable(owner).call{value: msg.value}("");
+
+        require(success);
     }
 }

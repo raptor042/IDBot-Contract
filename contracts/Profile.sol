@@ -16,7 +16,7 @@ contract Profile {
 
     string private email;
 
-    uint256 private age;
+    string private age;
 
     string private phone_number;
 
@@ -46,22 +46,20 @@ contract Profile {
 
     Project[] private _projects;
 
-    mapping (string => Project) private projects;
-
-    string[] private projectIds;
+    mapping (address => Project) private projects;
 
     address[] private access_list;
 
     mapping (address => bool) private accesslist;
 
-    event AddProject(address indexed ca, string name, string projectId);
+    event AddProject(address indexed ca, string name);
 
     constructor(
         string memory _name,
         string memory _description,
         bool _dev,
         string memory _email,
-        uint256 _age,
+        string memory _age,
         string memory phone,
         string memory _country,
         string memory _state,
@@ -144,7 +142,7 @@ contract Profile {
         return email;
     }
 
-    function getAge() public view returns (uint256) {
+    function getAge() public view returns (string memory) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
 
         return age;
@@ -184,12 +182,6 @@ contract Profile {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
 
         return reputation_score;
-    }
-
-    function getProjectIds() public view returns (string[] memory) {
-        require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-
-        return projectIds;
     }
 
     function getAccessList() public view returns (address[] memory) {
@@ -235,41 +227,39 @@ contract Profile {
             reputation_score : 100
         });
 
-        string memory projectId = string(abi.encodePacked("IDBot-", owner, "#", block.timestamp));
-
         _projects.push(project);
 
-        projects[projectId] = project;
+        projects[_contract_address] = project;
         
         reputation_score += 100;
 
-        emit AddProject(_contract_address, _name, projectId);
+        emit AddProject(_contract_address, _name);
     }
 
-    function getProjectName(string memory id) public view returns (string memory) {
+    function getProjectName(address ca) public view returns (string memory) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         return project.name;
     }
 
-    function getProjectDescription(string memory id) public view returns (string memory) {
+    function getProjectDescription(address ca) public view returns (string memory) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         return project.description;
     }
 
-    function getProjectContractAddress(string memory id) public view returns (address) {
+    function getProjectContractAddress(address ca) public view returns (address) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         return project.contract_address;
     }
 
-    function getProjectLinks(string memory id) public view returns (string[5] memory) {
+    function getProjectLinks(address ca) public view returns (string[5] memory) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         string[5] memory links = [
             project.website_link,
@@ -282,30 +272,30 @@ contract Profile {
         return links;
     }
 
-    function checkIfProjectIsHoneyPot(string memory id) public view returns (bool) {
+    function checkIfProjectIsHoneyPot(address ca) public view returns (bool) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         return project.isHoneyPot;
     }
 
-    function checkIfProjectIsRugged(string memory id) public view returns (bool) {
+    function checkIfProjectIsRugged(address ca) public view returns (bool) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         return project.isRugged;
     }
 
-    function getProjectReputationScore(string memory id) public view returns (uint256) {
+    function getProjectReputationScore(address ca) public view returns (uint256) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project memory project = projects[id];
+        Project memory project = projects[ca];
 
         return project.reputation_score;
     }
 
-    function reportProjectIsHoneyPot(string memory id) public {
+    function reportProjectIsHoneyPot(address ca) public {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project storage project = projects[id];
+        Project storage project = projects[ca];
 
         if(project.isHoneyPot == false) {
             project.isHoneyPot = true;
@@ -316,9 +306,9 @@ contract Profile {
         reputation_score -= 1;
     }
 
-    function reportProjectIsRugged(string memory id) public {
+    function reportProjectIsRugged(address ca) public {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-        Project storage project = projects[id];
+        Project storage project = projects[ca];
 
         if(project.isRugged == false) {
             project.isRugged = true;

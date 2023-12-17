@@ -1,7 +1,7 @@
 require('dotenv').config();
 require("@nomicfoundation/hardhat-toolbox");
 
-const { PRIVATE_KEY, GOERLI_API_URL, MAINNET_API_URL, ETHERSCAN_API_KEY } = process.env;
+const { PRIVATE_KEY, SEPOLIA_API_URL, MAINNET_API_URL, ETHERSCAN_API_KEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -14,11 +14,11 @@ module.exports = {
       }
     }
   },
-  defaultNetwork: "goerli",
+  defaultNetwork: "sepolia",
   networks: {
     hardhat: {},
-    goerli: {
-      url: `${GOERLI_API_URL}`,
+    sepolia: {
+      url: `${SEPOLIA_API_URL}`,
       accounts: [`0x${PRIVATE_KEY}`]
     },
     mainnet: {
