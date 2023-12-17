@@ -52,7 +52,7 @@ contract IDBot {
         address _owner,
         uint256 number
     ) public onlyOwner {
-        require(isProfiled[_owner], "You already have an account.");
+        require(!isProfiled[_owner], "You already have an account.");
         Profile profile = new Profile(
             _name,
             _description,
