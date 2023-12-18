@@ -80,12 +80,12 @@ contract IDBot {
         emit CreateProfile(address(profile), _owner, profileId);
     }
 
-    function subscribe(address _account, uint256 _duration) public payable onlyOwner {
-        if(isSubscribed(_account)) {
-            updateSubscription(_account, _duration);
+    function subscribe(uint256 _duration) public payable {
+        if(isSubscribed(msg.sender)) {
+            updateSubscription(_duration);
         } else {
             Subscription memory subscription = Subscription({
-                account : _account,
+                account : msg.sender,
                 duration : _duration,
                 startedAt : block.timestamp,
                 isActive : true
@@ -94,18 +94,18 @@ contract IDBot {
             for (uint i = 0; i < _profiles.length; i++) {
                 Profile profile = Profile(_profiles[i]);
 
-                profile.addAccountToAccessList(_account);
+                profile.addAccountToAccessList(msg.sender);
             }
 
-            Profile _profile = Profile(profiles[_account]);
+            Profile _profile = Profile(profiles[msg.sender]);
 
             _profile.addVerification();
 
             _subscribers.push(subscription);
 
-            subscribers[_account] = subscription;
+            subscribers[msg.sender] = subscription;
 
-            emit Subscribed(_account, _duration);
+            emit Subscribed(msg.sender, _duration);
 
             (bool success, ) = payable(owner).call{value: msg.value}("");
 
@@ -144,8 +144,8 @@ contract IDBot {
         }
     }
 
-    function updateSubscription(address _account, uint256 _duration) public payable onlyOwner {
-        Subscription storage subscriber = subscribers[_account];
+    function updateSubscription(uint256 _duration) public payable {
+        Subscription storage subscriber = subscribers[msg.sender];
 
         if(subscriber.isActive == false) {
             subscriber.isActive = true;
@@ -155,7 +155,7 @@ contract IDBot {
 
         subscriber.startedAt = block.timestamp;
 
-        emit Subscribed(_account, _duration);
+        emit Subscribed(msg.sender, _duration);
 
         (bool success, ) = payable(owner).call{value: msg.value}("");
 
