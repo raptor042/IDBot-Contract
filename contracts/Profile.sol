@@ -28,7 +28,11 @@ contract Profile {
 
     string private profile_pic_url;
 
+    string private identity_url;
+
     uint256 private reputation_score;
+
+    uint256 private idbot_number;
 
     struct Project {
         string name;
@@ -48,8 +52,6 @@ contract Profile {
 
     mapping (address => Project) private projects;
 
-    address[] private access_list;
-
     mapping (address => bool) private accesslist;
 
     event AddProject(address indexed ca, string name);
@@ -64,8 +66,9 @@ contract Profile {
         string memory _country,
         string memory _state,
         string memory _address,
-        string memory url,
-        address _owner
+        string[] memory urls,
+        address _owner,
+        uint256 number
     ) {
         name = _name;
 
@@ -85,17 +88,17 @@ contract Profile {
 
         residential_address = _address;
 
-        profile_pic_url = url;
+        profile_pic_url = urls[0];
+
+        identity_url = urls[1];
+
+        idbot_number = number;
 
         reputation_score = 0;
 
         owner = _owner;
 
         super_owner = msg.sender;
-
-        access_list.push(owner);
-
-        access_list.push(super_owner);
 
         accesslist[owner] = true;
 
@@ -110,6 +113,12 @@ contract Profile {
     modifier onlySuperOwner {
         require(msg.sender == super_owner, "Not Authorized.");
         _;
+    }
+
+    function getVerificationStatus() public view returns (bool) {
+        require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
+
+        return verified;
     }
 
     function getOwner() public view returns (address) {
@@ -178,16 +187,20 @@ contract Profile {
         return profile_pic_url;
     }
 
+    function getIdentityUrl() public onlySuperOwner view returns (string memory) {
+        return identity_url;
+    }
+
+    function getIDBotNumber() public view returns (uint256) {
+        require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
+
+        return idbot_number;
+    }
+
     function getReputationScore() public view returns (uint256) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
 
         return reputation_score;
-    }
-
-    function getAccessList() public view returns (address[] memory) {
-        require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
-
-        return access_list;
     }
 
     function getAccountAccess(address account) public view returns (bool) {
@@ -325,8 +338,6 @@ contract Profile {
     }
 
     function addAccountToAccessList(address account) public onlySuperOwner {
-        access_list.push(account);
-
         accesslist[account] = true;
     }
 

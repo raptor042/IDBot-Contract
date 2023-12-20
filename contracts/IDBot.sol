@@ -38,6 +38,10 @@ contract IDBot {
         _;
     }
 
+    function getProfiles() public onlyOwner view returns (address[] memory) {
+        return _profiles;
+    }
+
     function createProfile(
         string memory _name,
         string memory _description,
@@ -48,7 +52,7 @@ contract IDBot {
         string memory _country,
         string memory _state,
         string memory _address,
-        string memory url,
+        string[] memory urls,
         address _owner,
         uint256 number
     ) public onlyOwner {
@@ -63,8 +67,9 @@ contract IDBot {
             _country,
             _state,
             _address,
-            url,
-            _owner
+            urls,
+            _owner,
+            number
         );
 
         uint256 profileId = number + block.timestamp;
@@ -97,10 +102,6 @@ contract IDBot {
                 profile.addAccountToAccessList(msg.sender);
             }
 
-            Profile _profile = Profile(profiles[msg.sender]);
-
-            _profile.addVerification();
-
             _subscribers.push(subscription);
 
             subscribers[msg.sender] = subscription;
@@ -126,10 +127,6 @@ contract IDBot {
 
                     profile.removeAccountFromAccessList(subscriber.account);
                 }
-
-                Profile _profile = Profile(subscriber.account);
-
-                _profile.removeVerification();
             }
         }
     }
