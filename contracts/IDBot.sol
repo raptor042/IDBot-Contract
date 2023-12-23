@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "./Profile.sol";
 
 contract IDBot {
-    address owner;
+    address public owner;
 
     address[] public _profiles;
 
@@ -57,6 +57,9 @@ contract IDBot {
         uint256 number
     ) public onlyOwner {
         require(!isProfiled[_owner], "You already have an account.");
+
+        uint256 profileId = number + block.timestamp;
+
         Profile profile = new Profile(
             _name,
             _description,
@@ -69,10 +72,9 @@ contract IDBot {
             _address,
             urls,
             _owner,
-            number
+            msg.sender,
+            profileId
         );
-
-        uint256 profileId = number + block.timestamp;
 
         _profiles.push(address(profile));
 
@@ -131,7 +133,7 @@ contract IDBot {
         }
     }
 
-    function isSubscribed(address _account) public view onlyOwner returns (bool subscribed) {
+    function isSubscribed(address _account) public view returns (bool subscribed) {
         Subscription memory subscriber = subscribers[_account];
 
         if(_account == subscriber.account) {

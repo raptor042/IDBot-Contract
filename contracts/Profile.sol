@@ -6,6 +6,8 @@ contract Profile {
 
     address super_owner;
 
+    string private verification_status;
+
     bool private verified;
 
     string private name;
@@ -56,6 +58,10 @@ contract Profile {
 
     event AddProject(address indexed ca, string name);
 
+    event Verified();
+
+    event Unverified();
+
     constructor(
         string memory _name,
         string memory _description,
@@ -68,8 +74,11 @@ contract Profile {
         string memory _address,
         string[] memory urls,
         address _owner,
+        address owner_,
         uint256 number
     ) {
+        verification_status = "Pending";
+        
         name = _name;
 
         description = _description;
@@ -98,11 +107,11 @@ contract Profile {
 
         owner = _owner;
 
-        super_owner = msg.sender;
+        super_owner = owner_;
 
-        accesslist[owner] = true;
+        accesslist[_owner] = true;
 
-        accesslist[super_owner] = true;
+        accesslist[owner_] = true;
     }
 
     modifier onlyOwner {
@@ -115,10 +124,10 @@ contract Profile {
         _;
     }
 
-    function getVerificationStatus() public view returns (bool) {
+    function getVerificationStatus() public view returns (string memory) {
         require(accesslist[msg.sender], "You are not authorized to perform this transaction.");
 
-        return verified;
+        return verification_status;
     }
 
     function getOwner() public view returns (address) {
@@ -346,10 +355,16 @@ contract Profile {
     }
 
     function addVerification() public onlySuperOwner {
+        verification_status = "Verified";
         verified = true;
+
+        emit Verified();
     }
 
     function removeVerification() public onlySuperOwner {
+        verification_status = "Not Verified";
         verified = false;
+
+        emit Unverified();
     }
 }
