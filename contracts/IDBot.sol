@@ -55,7 +55,7 @@ contract IDBot {
         string[] memory urls,
         address _owner,
         uint256 number
-    ) public onlyOwner {
+    ) public {
         require(!isProfiled[_owner], "You already have an account.");
 
         uint256 profileId = number + block.timestamp;
@@ -72,7 +72,7 @@ contract IDBot {
             _address,
             urls,
             _owner,
-            msg.sender,
+            owner,
             profileId
         );
 
