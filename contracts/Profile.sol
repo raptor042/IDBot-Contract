@@ -40,6 +40,7 @@ contract Profile {
         string name;
         string description;
         address contract_address;
+        string chain;
         string website_link;
         string telegram_link;
         string twitter_link;
@@ -58,9 +59,9 @@ contract Profile {
 
     event AddProject(address indexed ca, string name);
 
-    event Verified();
+    event Verified(address owner);
 
-    event Unverified();
+    event Unverified(address owner);
 
     constructor(
         string memory _name,
@@ -228,6 +229,7 @@ contract Profile {
         string memory _name,
         string memory _description,
         address _contract_address,
+        string memory _chain,
         string memory _website_link,
         string memory _telegram_link,
         string memory _twitter_link,
@@ -239,6 +241,7 @@ contract Profile {
             name : _name,
             description : _description,
             contract_address : _contract_address,
+            chain : _chain,
             website_link : _website_link,
             telegram_link : _telegram_link,
             twitter_link : _twitter_link,
@@ -358,13 +361,13 @@ contract Profile {
         verification_status = "Verified";
         verified = true;
 
-        emit Verified();
+        emit Verified(owner);
     }
 
     function removeVerification() public onlySuperOwner {
         verification_status = "Not Verified";
         verified = false;
 
-        emit Unverified();
+        emit Unverified(owner);
     }
 }
