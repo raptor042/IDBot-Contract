@@ -346,11 +346,11 @@ contract Profile {
         owner = _owner;
     }
 
-    function addAccountToAccessList(address account) public onlySuperOwner {
+    function addAccountToAccessList(address account) public {
         accesslist[account] = true;
     }
 
-    function removeAccountFromAccessList(address account) public onlySuperOwner {
+    function removeAccountFromAccessList(address account) public {
         accesslist[account] = false;
     }
 
