@@ -1,7 +1,13 @@
 require('dotenv').config();
 require("@nomicfoundation/hardhat-toolbox");
 
-const { PRIVATE_KEY, SEPOLIA_API_URL, MAINNET_API_URL, ETHERSCAN_API_KEY } = process.env;
+const {
+  PRIVATE__KEY,
+  PRIVATE_KEY,
+  SEPOLIA_API_URL,
+  MAINNET_API_URL,
+  ETHERSCAN_API_KEY
+} = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -20,7 +26,7 @@ module.exports = {
     hardhat: {},
     sepolia: {
       url: `${SEPOLIA_API_URL}`,
-      accounts: [`0x${PRIVATE_KEY}`]
+      accounts: [`0x${PRIVATE__KEY}`]
     },
     mainnet: {
       url: `${MAINNET_API_URL}`,
