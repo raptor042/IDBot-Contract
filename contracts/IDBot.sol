@@ -218,70 +218,70 @@ contract IDBot {
     }
 
     function getName(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.name;
     }
 
     function getDescription(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.description;
     }
 
     function isDev(address user) public view returns (bool) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.dev;
     }
 
     function getEmail(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.email;
     }
 
     function getAge(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.age;
     }
 
     function getPhoneNumber(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.phone_number;
     }
 
     function getCountry(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.country;
     }
 
     function getState(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.state;
     }
 
     function getResidentialAddress(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.residential_address;
     }
 
     function getProfilePicUrl(address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.profile_pic_url;
@@ -294,14 +294,14 @@ contract IDBot {
     }
 
     function getIDBotNumber(address user) public view returns (uint256) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.idbot_number;
     }
 
     function getReputationScore(address user) public view returns (int256) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.reputation_score;
@@ -347,14 +347,13 @@ contract IDBot {
     }
 
     function getProjects(address user) public view returns (Project[] memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         return profile.projects;
     }
 
     function getProject(address ca, address user) internal view returns (Project memory project) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
         Profile storage profile = profiles[user];
 
         for (uint256 i = 0; i < profile.projects.length; i++) {
@@ -365,7 +364,7 @@ contract IDBot {
     }
 
     function getProjectName(address ca, address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
@@ -373,7 +372,7 @@ contract IDBot {
     }
 
     function getProjectDescription(address ca, address user) public view returns (string memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
@@ -381,7 +380,7 @@ contract IDBot {
     }
 
     function getProjectContractAddress(address ca, address user) public view returns (address) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
@@ -389,7 +388,7 @@ contract IDBot {
     }
 
     function getProjectLinks(address ca, address user) public view returns (string[5] memory) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
@@ -405,7 +404,7 @@ contract IDBot {
     }
 
     function checkIfProjectIsHoneyPot(address ca, address user) public view returns (bool) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
@@ -413,7 +412,7 @@ contract IDBot {
     }
 
     function checkIfProjectIsRugged(address ca, address user) public view returns (bool) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
@@ -421,7 +420,7 @@ contract IDBot {
     }
 
     function getProjectReputationScore(address ca, address user) public view returns (int256) {
-        require(access_list[user], "You are not authorized to perform this transaction.");
+        require(access_list[msg.sender], "You are not authorized to perform this transaction.");
 
         Project memory project = getProject(ca, user);
 
